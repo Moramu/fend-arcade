@@ -22,14 +22,14 @@ Enemy.prototype.update = function(dt) {
         if(enemy.x > 500) {
             enemy.x = -100;
             enemy.speed = 1 + Math.floor(Math.random() * 512);
-            enemy.y = randPosition(enemyPos);
+            enemy.y = enemyRandPosition(enemyPos);
         }
     });
 };
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    if(gamePrepare != true) {
+    if(gameReady != true) {
     }
     else {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -83,7 +83,7 @@ Player.prototype.update = function() {
 }
   
 Player.prototype.render = function() {
-  if(gamePrepare != true) {
+  if(gameReady != true) {
         ctx.fillStyle="white";
         ctx.fillRect(50, 170, 400, 300);
         imageBoy = new Image();
@@ -99,30 +99,50 @@ Player.prototype.render = function() {
         ctx.font = "15px Arial";
         ctx.fillText("Select you player.",250,240);
         ctx.font = "10px Arial";
-        ctx.fillText("Use left,right arrow to select.",250,260);
+        ctx.fillText("\'b' - Boy, \'g' - Girl, \'Space' - Select",250,260);
+
         document.addEventListener('keyup', function(e) {
             var allowedKeys = {
-                37: 'left',
-                39: 'right',
-                40: 'down'
+                66: 'b',
+                71: 'g',
+                32: '(space)'
             };
 
-            if(allowedKeys[e.keyCode] === 'left') {
-                player.sprite = 'images/char-boy.png';
-                gameReady();   
+            if(allowedKeys[e.keyCode] === 'b') {
+                selected = playerSprites.boy;
             }
-            if(allowedKeys[e.keyCode] === 'right') {
-                player.sprite = 'images/char-princess-girl.png';
-                gameReady();   
+            if(allowedKeys[e.keyCode] === 'g') {
+                selected = playerSprites.girl;   
             }
-            if(allowedKeys[e.keyCode] === 'down') {
-                console.log('down');   
+            if(allowedKeys[e.keyCode] === '(space)') {
+                if(selected!=undefined){
+                    player.sprite = selected;
+                    gameReady = true;
+                }
             }
         });        
-    }
+     }
     else {    
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    // console.log(player.x + " y");
     }
+}
+
+var Gem = function(x,y,spriteArr,width,height) {
+    this.x = x;
+    this.y = y;
+    this.sprite = spriteArr[Math.floor(Math.random() * spriteArr.length)];
+    this.width = width;
+    this.height = height;
+}
+
+Gem.prototype.update = function() {
+    this.x;
+    this.y;
+}
+
+Gem.prototype.render = function() {
+     ctx.drawImage(Resources.get(this.sprite), this.x, this.y, this.width,this.height);
 }
 
 // Now instantiate your objects.
@@ -130,16 +150,24 @@ Player.prototype.render = function() {
 // Place the player object in a variable called player
 
 
-
-var enemy;
+var gameReady = false;
+var lives = 3;
+var score = 0;
+var selected;
 var allEnemies = [];
+var allGems = [];
 var playerSprites = {boy:'images/char-boy.png', girl:'images/char-princess-girl.png'};
-gamePrepare = false;
+var gemSprites = ['images/Gem_Blue.png','images/Gem_Green.png','images/Gem_Orange.png'];
 var enemyPos = [60,145,230];
-// var player = new Player(200,400, 'images/char-boy.png');
+var gemPos = [[60,145,230],[0,100,200,300,400]];
 var player = new Player(200,400);
+
 var enemyQuantity = 3;
+var gemQuantity = 2;
 enemyGenerate();
+gemGenerate();
+//var gem = new Gem(100,100,gemSprites,100,100);
+
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -157,22 +185,57 @@ document.addEventListener('keyup', function(e) {
 
 
 
-function randPosition(arr) {
+function enemyRandPosition(arr) {
      return (arr[Math.floor(Math.random() * arr.length)]);
+}
+
+function gemRandPosition(arr) {
+    return "gg";   
+
 }
 
 function enemyGenerate () {
     allEnemies = [];
     while(enemyQuantity!=0){
-        enemy = new Enemy(0, randPosition(enemyPos), 1 + Math.floor(Math.random() * 512));
+        enemy = new Enemy(0, enemyRandPosition(enemyPos), 1 + Math.floor(Math.random() * 512));
         allEnemies.push(enemy);
         enemyQuantity--;
         }
     enemyQuantity;
 }
 
-function gameReady() {
-    gamePrepare = true;
+function gemGenerate () {
+    allGems = [];
+    while(gemQuantity!=0){
+        gem = new Gem(1, 1,gemSprites,100,100);
+        allGems.push(gem);
+        gemQuantity--;
+        }
+    gemQuantity;
 }
 
+function enemyCheckCollisions() {
+    allEnemies.forEach(function(enemy) {
+        if(player.y === enemy.y && Math.abs(player.x-enemy.x)<70 ) {
+            player.x = 200;
+            player.y = 400;
+            // lose();
+    }
+  })
+}
+
+function gemCheckCollisions() {
+    allGems.forEach(function(gem) {
+        if(player.y === gem.y && player.x === gem.x) {
+          score+=100;
+          console.log("GEM!");
+    }
+  })
+}
+
+function win() { 
+
+    player.x = 200;
+    player.y = 400;
+}
 
