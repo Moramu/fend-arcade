@@ -79,8 +79,8 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        enemyCheckCollisions();
         gemCheckCollisions();
+        enemyCheckCollisions();
     }
 
     /* This is called by the update function and loops through all of the
@@ -94,7 +94,7 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-
+        gem.update();
         player.update();
     }
 
@@ -151,12 +151,14 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
+        allGems.forEach(function(gem) {
+            gem.render();
+        });
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
-        // player.characterSelect();
+       
         player.render();
-        gem.render();
     }
 
     /* This function does nothing but it could have been a good place to

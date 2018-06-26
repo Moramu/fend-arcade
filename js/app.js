@@ -22,7 +22,7 @@ Enemy.prototype.update = function(dt) {
         if(enemy.x > 500) {
             enemy.x = -100;
             enemy.speed = 1 + Math.floor(Math.random() * 512);
-            enemy.y = enemyRandPosition(enemyPos);
+            enemy.y = randPosition(enemyPos);
         }
     });
 };
@@ -124,7 +124,6 @@ Player.prototype.render = function() {
      }
     else {    
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    // console.log(player.x + " y");
     }
 }
 
@@ -137,8 +136,11 @@ var Gem = function(x,y,spriteArr,width,height) {
 }
 
 Gem.prototype.update = function() {
-    this.x;
-    this.y;
+     allGems.forEach(function(gem){
+        this.x;
+        this.y;
+        this.sprite;    
+     });
 }
 
 Gem.prototype.render = function() {
@@ -159,14 +161,18 @@ var allGems = [];
 var playerSprites = {boy:'images/char-boy.png', girl:'images/char-princess-girl.png'};
 var gemSprites = ['images/Gem_Blue.png','images/Gem_Green.png','images/Gem_Orange.png'];
 var enemyPos = [60,145,230];
-var gemPos = [[60,145,230],[0,100,200,300,400]];
+var gemPosY = [140,230,310];
+var gemPosX = [25,125,225,325,425];
 var player = new Player(200,400);
-
+// var gem = new Gem(425,310,gemSprites,50,50);
 var enemyQuantity = 3;
 var gemQuantity = 2;
-enemyGenerate();
+var test = false;
+var gg;
 gemGenerate();
-//var gem = new Gem(100,100,gemSprites,100,100);
+// enemyGenerate();
+
+
 
 
 // This listens for key presses and sends the keys to your
@@ -185,19 +191,14 @@ document.addEventListener('keyup', function(e) {
 
 
 
-function enemyRandPosition(arr) {
+function randPosition(arr) {
      return (arr[Math.floor(Math.random() * arr.length)]);
-}
-
-function gemRandPosition(arr) {
-    return "gg";   
-
 }
 
 function enemyGenerate () {
     allEnemies = [];
     while(enemyQuantity!=0){
-        enemy = new Enemy(0, enemyRandPosition(enemyPos), 1 + Math.floor(Math.random() * 512));
+        enemy = new Enemy(0, randPosition(enemyPos), 1 + Math.floor(Math.random() * 512));
         allEnemies.push(enemy);
         enemyQuantity--;
         }
@@ -205,9 +206,9 @@ function enemyGenerate () {
 }
 
 function gemGenerate () {
-    allGems = [];
+    //allGems = [];
     while(gemQuantity!=0){
-        gem = new Gem(1, 1,gemSprites,100,100);
+        gem = new Gem(randPosition(gemPosX),randPosition(gemPosY),gemSprites,50,50);
         allGems.push(gem);
         gemQuantity--;
         }
@@ -219,18 +220,21 @@ function enemyCheckCollisions() {
         if(player.y === enemy.y && Math.abs(player.x-enemy.x)<70 ) {
             player.x = 200;
             player.y = 400;
-            // lose();
     }
   })
 }
 
 function gemCheckCollisions() {
     allGems.forEach(function(gem) {
-        if(player.y === gem.y && player.x === gem.x) {
+        if(Math.abs(gem.y - player.y) === (80 || -85) && Math.abs(gem.x - player.x) === (25)) {
           score+=100;
-          console.log("GEM!");
+          document.querySelector('.player-score').textContent = score;
+          // delete allGems[this.gem];
+          //console.log(this.gem);
+          this.gem = new Gem (randPosition(gemPosX),randPosition(gemPosY),gemSprites,50,50);
+          console.log(this.gem);
     }
-  })
+  });
 }
 
 function win() { 
