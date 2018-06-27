@@ -83,6 +83,7 @@ var Engine = (function(global) {
         enemyCheckCollisions();
     }
 
+    document.addEventListener('keyup',press, true);
      $('.pause').on('click', function()  {
          pauseGame();
      }); 

@@ -36,11 +36,6 @@ Enemy.prototype.render = function() {
     }
 };
 
-
-Enemy.prototype.randPosition = function(arr) {
-    var pos = arr[Math.floor(Math.random() * arr.length)] 
-    return pos;
-}
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
@@ -100,7 +95,7 @@ Player.prototype.render = function() {
         ctx.fillText("Select you player.",250,240);
         ctx.font = "10px Arial";
         ctx.fillText("\'b' - Boy, \'g' - Girl, \'Space' - Select",250,260);
-
+        
         document.addEventListener('keyup', function(e) {
             var allowedKeys = {
                 66: 'b',
@@ -109,6 +104,9 @@ Player.prototype.render = function() {
             };
 
             if(allowedKeys[e.keyCode] === 'b') {
+                ctx.strokeStyle="red";                  // This not working because 
+                ctx.rect(125,270,100,120);              // canvas allready created 
+                ctx.stroke();                           // How can i fix it
                 selected = playerSprites.boy;
             }
             if(allowedKeys[e.keyCode] === 'g') {
@@ -161,25 +159,22 @@ var allGems = [];
 var playerSprites = {boy:'images/char-boy.png', girl:'images/char-princess-girl.png'};
 var gemSprites = ['images/Gem_Blue.png','images/Gem_Green.png','images/Gem_Orange.png'];
 var enemyPos = [60,145,230];
-var gemPosY = [140,225,310];
-var gemPosX = [25,125,225,325,425];
+var gemPos = [[25,125,225,325,425],[140,225,310]];
 var player = new Player(200,400);
-// var gem = new Gem(425,310,gemSprites,50,50);
 var enemyQuantity = 3;
 var gemQuantity = 2;
-var test = false;
-var gg;
+
+document.addEventListener('keyup',press, true);
 gemGenerate();
 enemyGenerate();
 
 
 
-
+// Rebuilded *
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
-
-document.addEventListener('keyup', function(e) {
-    var allowedKeys = {
+var press = function(e) {
+     var allowedKeys = {
         37: 'left',
         38: 'up',
         39: 'right',
@@ -187,14 +182,14 @@ document.addEventListener('keyup', function(e) {
     };
 
     player.handleInput(allowedKeys[e.keyCode]);
-});
+}
 
-
-
+// Randomize position 
 function randPosition(arr) {
      return (arr[Math.floor(Math.random() * arr.length)]);
 }
 
+// Generate enemies
 function enemyGenerate () {
     allEnemies = [];
     while(enemyQuantity!=0){
@@ -205,25 +200,39 @@ function enemyGenerate () {
     enemyQuantity;
 }
 
+// Generate gems
 function gemGenerate () {
-    //allGems = [];
     while(gemQuantity!=0){
-        gem = new Gem(randPosition(gemPosX),randPosition(gemPosY),gemSprites,50,50);
+        gem = new Gem(randPosition(gemPos[0]),randPosition(gemPos[1]),gemSprites,50,50);
         allGems.push(gem);
         gemQuantity--;
         }
     gemQuantity;
 }
 
+// Checking collision with enemies
 function enemyCheckCollisions() {
     allEnemies.forEach(function(enemy) {
         if(player.y === enemy.y && Math.abs(player.x-enemy.x)<70 ) {
             player.x = 200;
             player.y = 400;
+            lives-=1;
+            if(lives === 2) {
+                $(".l3").attr("src","images/Heart_empty.png");
+            }
+            if(lives === 1) {
+                $(".l2").attr("src","images/Heart_empty.png");
+            }
+            if(lives === 0) {
+                $(".l1").attr("src","images/Heart_empty.png");
+                lose();
+            }
     }
+
   })
 }
 
+//Checking collisions with gems
 function gemCheckCollisions() {
     allGems.forEach(function(gem) {
         if((Math.abs(gem.y - player.y) === 80 || Math.abs(gem.y - player.y) === 85) && Math.abs(gem.x - player.x) === 25) { // i cant fix tihs 
@@ -231,28 +240,37 @@ function gemCheckCollisions() {
           document.querySelector('.player-score').textContent = score;
           // delete allGems[this.gem];
           //console.log(this.gem);
-          this.gem = new Gem (randPosition(gemPosX),randPosition(gemPosY),gemSprites,50,50);
+          // this.gem = new Gem (randPosition(gemPosX),randPosition(gemPosY),gemSprites,50,50);
           // console.log(this.gem);
     }
   });
 }
 
-function win() { 
 
+// Win game
+function win() { 
     player.x = 200;
     player.y = 400;
 }
 
-function pauseGame() {
-        allEnemies.forEach(function(enemy) {
-            enemy.speed = 0;
-        });
+function lose() {
+   ctx.fillStyle="black";
+   ctx.fillRect(50, 170, 400, 300);
 }
 
-// -- Resume Game -- //
+// Pause game
+function pauseGame() {
+    allEnemies.forEach(function(enemy) {
+        enemy.speed = 0;
+    });
+    document.removeEventListener('keyup',press,true);    
+}
+
+// Resume Game
 function resumeGame() {
-        allEnemies.forEach(function(enemy) {
-            enemy.speed = 100;
-        });
+    allEnemies.forEach(function(enemy) {
+        enemy.speed = 100;
+    });
+    document.addEventListener('keyup',press,true);
 }
 
