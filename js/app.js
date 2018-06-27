@@ -27,6 +27,7 @@ Enemy.prototype.update = function(dt) {
     });
 };
 
+
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     if(gameReady != true) {
@@ -76,6 +77,28 @@ Player.prototype.update = function() {
         setTimeout(win,500);
     }
 }
+
+Player.prototype.checkCollisions = function() {
+    if(gameReady===true) {
+    allEnemies.forEach(function(enemy) {
+        if(player.y === enemy.y && Math.abs(player.x-enemy.x)<70 ) {
+            player.x = 200;
+            player.y = 400;
+            lives-=1;
+                if(lives === 2) {
+                    $(".l3").attr("src","images/Heart_empty.png");
+                }
+                if(lives === 1) {
+                    $(".l2").attr("src","images/Heart_empty.png");
+                }
+                if(lives === 0) {
+                    $(".l1").attr("src","images/Heart_empty.png");
+                lose();
+                }
+        }
+  });
+  }
+};
   
 Player.prototype.render = function() {
   if(gameReady != true) {
@@ -95,6 +118,7 @@ Player.prototype.render = function() {
         ctx.fillText("Select you player.",250,240);
         ctx.font = "10px Arial";
         ctx.fillText("\'b' - Boy, \'g' - Girl, \'Space' - Select",250,260);
+         
         
         document.addEventListener('keyup', function(e) {
             var allowedKeys = {
@@ -103,11 +127,13 @@ Player.prototype.render = function() {
                 32: '(space)'
             };
 
-            if(allowedKeys[e.keyCode] === 'b') {
-                ctx.strokeStyle="red";                  // This not working because 
-                ctx.rect(125,270,100,120);              // canvas allready created 
-                ctx.stroke();                           // How can i fix it
+            if(allowedKeys[e.keyCode] === 'b') {              
                 selected = playerSprites.boy;
+                ctx.globalCompositeOperation="source-over";
+                ctx.strokeStyle="red";
+                ctx.lineWidth = "6";                  
+                ctx.rect(125,270,100,120);            
+                ctx.stroke();      
             }
             if(allowedKeys[e.keyCode] === 'g') {
                 selected = playerSprites.girl;   
@@ -133,13 +159,19 @@ var Gem = function(x,y,spriteArr,width,height) {
     this.height = height;
 }
 
-Gem.prototype.update = function() {
-     allGems.forEach(function(gem){
-        this.x;
-        this.y;
-        this.sprite;    
-     });
-}
+Gem.prototype.checkCollisions = function() {
+   if(gameReady===true){
+    allGems.forEach(function(gem) {
+        if((Math.abs(gem.y - player.y) === 80 || Math.abs(gem.y - player.y) === 85) && Math.abs(gem.x - player.x) === 25) { 
+            score+=100;
+            document.querySelector('.player-score').textContent = score;
+            delete allGems[allGems.indexOf(gem)];      
+            gem = new Gem(randPosition(gemPos[0]),randPosition(gemPos[1]),gemSprites,50,50);
+            allGems.push(gem);
+        }
+    });
+  }   
+};
 
 Gem.prototype.render = function() {
      ctx.drawImage(Resources.get(this.sprite), this.x, this.y, this.width,this.height);
@@ -163,7 +195,6 @@ var gemPos = [[25,125,225,325,425],[140,225,310]];
 var player = new Player(200,400);
 var enemyQuantity = 3;
 var gemQuantity = 2;
-
 document.addEventListener('keyup',press, true);
 gemGenerate();
 enemyGenerate();
@@ -210,52 +241,21 @@ function gemGenerate () {
     gemQuantity;
 }
 
-// Checking collision with enemies
-function enemyCheckCollisions() {
-    allEnemies.forEach(function(enemy) {
-        if(player.y === enemy.y && Math.abs(player.x-enemy.x)<70 ) {
-            player.x = 200;
-            player.y = 400;
-            lives-=1;
-            if(lives === 2) {
-                $(".l3").attr("src","images/Heart_empty.png");
-            }
-            if(lives === 1) {
-                $(".l2").attr("src","images/Heart_empty.png");
-            }
-            if(lives === 0) {
-                $(".l1").attr("src","images/Heart_empty.png");
-                lose();
-            }
-    }
-
-  })
-}
-
-//Checking collisions with gems
-function gemCheckCollisions() {
-    allGems.forEach(function(gem) {
-        if((Math.abs(gem.y - player.y) === 80 || Math.abs(gem.y - player.y) === 85) && Math.abs(gem.x - player.x) === 25) { // i cant fix tihs 
-          score+=100;
-          document.querySelector('.player-score').textContent = score;
-          // delete allGems[this.gem];
-          //console.log(this.gem);
-          // this.gem = new Gem (randPosition(gemPosX),randPosition(gemPosY),gemSprites,50,50);
-          // console.log(this.gem);
-    }
-  });
-}
-
-
 // Win game
 function win() { 
     player.x = 200;
     player.y = 400;
+    pauseGame(); 
 }
 
 function lose() {
-   ctx.fillStyle="black";
-   ctx.fillRect(50, 170, 400, 300);
+    ctx.globalCompositeOperation="source-over";
+    ctx.strokeStyle="red";
+    ctx.lineWidth = "6";                  
+    ctx.rect(125,270,100,120);            
+    ctx.stroke();  
+    console.log('ggg');
+    pauseGame();    
 }
 
 // Pause game
@@ -273,4 +273,9 @@ function resumeGame() {
     });
     document.addEventListener('keyup',press,true);
 }
+
+function restartGame(){
+
+}
+
 

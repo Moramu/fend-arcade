@@ -79,8 +79,8 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        gemCheckCollisions();
-        enemyCheckCollisions();
+        gem.checkCollisions();
+        player.checkCollisions();
     }
 
     document.addEventListener('keyup',press, true);
@@ -110,7 +110,6 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        gem.update();
         player.update();
     }
 
