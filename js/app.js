@@ -161,7 +161,7 @@ var allGems = [];
 var playerSprites = {boy:'images/char-boy.png', girl:'images/char-princess-girl.png'};
 var gemSprites = ['images/Gem_Blue.png','images/Gem_Green.png','images/Gem_Orange.png'];
 var enemyPos = [60,145,230];
-var gemPosY = [140,230,310];
+var gemPosY = [140,225,310];
 var gemPosX = [25,125,225,325,425];
 var player = new Player(200,400);
 // var gem = new Gem(425,310,gemSprites,50,50);
@@ -170,7 +170,7 @@ var gemQuantity = 2;
 var test = false;
 var gg;
 gemGenerate();
-// enemyGenerate();
+enemyGenerate();
 
 
 
@@ -226,13 +226,13 @@ function enemyCheckCollisions() {
 
 function gemCheckCollisions() {
     allGems.forEach(function(gem) {
-        if(Math.abs(gem.y - player.y) === (80 || -85) && Math.abs(gem.x - player.x) === (25)) {
+        if((Math.abs(gem.y - player.y) === 80 || Math.abs(gem.y - player.y) === 85) && Math.abs(gem.x - player.x) === 25) { // i cant fix tihs 
           score+=100;
           document.querySelector('.player-score').textContent = score;
           // delete allGems[this.gem];
           //console.log(this.gem);
           this.gem = new Gem (randPosition(gemPosX),randPosition(gemPosY),gemSprites,50,50);
-          console.log(this.gem);
+          // console.log(this.gem);
     }
   });
 }
@@ -241,5 +241,18 @@ function win() {
 
     player.x = 200;
     player.y = 400;
+}
+
+function pauseGame() {
+        allEnemies.forEach(function(enemy) {
+            enemy.speed = 0;
+        });
+}
+
+// -- Resume Game -- //
+function resumeGame() {
+        allEnemies.forEach(function(enemy) {
+            enemy.speed = 100;
+        });
 }
 

@@ -83,6 +83,21 @@ var Engine = (function(global) {
         enemyCheckCollisions();
     }
 
+     $('.pause').on('click', function()  {
+         pauseGame();
+     }); 
+
+    $('.play').on('click', function()  {
+        if(enemy.speed === 0) {
+            resumeGame();
+        }
+    }); 
+    $('.restartButton').on('click', function()  {
+            restartGame();
+            console.log('gg');
+        
+    }); 
+
     /* This is called by the update function and loops through all of the
      * objects within your allEnemies array as defined in app.js and calls
      * their update() methods. It will then call the update function for your
