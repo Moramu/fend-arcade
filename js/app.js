@@ -99,56 +99,10 @@ Player.prototype.checkCollisions = function() {
   });
   }
 };
+
   
 Player.prototype.render = function() {
-  if(gameReady != true) {
-        ctx.fillStyle="white";
-        ctx.fillRect(50, 170, 400, 300);
-        imageBoy = new Image();
-        imageGirl = new Image();
-        imageBoy.src = playerSprites.boy;
-        imageGirl.src = playerSprites.girl;
-        ctx.drawImage(imageBoy, 125, 225);
-        ctx.drawImage(imageGirl, 275, 225);
-        ctx.font = "30px Arial";
-        ctx.fillStyle = "black";
-        ctx.textAlign = "center";
-        ctx.fillText("Welcome!",250,220);
-        ctx.font = "15px Arial";
-        ctx.fillText("Select you player.",250,240);
-        ctx.font = "10px Arial";
-        ctx.fillText("\'b' - Boy, \'g' - Girl, \'Space' - Select",250,260);
-         
-        
-        document.addEventListener('keyup', function(e) {
-            var allowedKeys = {
-                66: 'b',
-                71: 'g',
-                32: '(space)'
-            };
-
-            if(allowedKeys[e.keyCode] === 'b') {              
-                selected = playerSprites.boy;
-                ctx.globalCompositeOperation="source-over";
-                ctx.strokeStyle="red";
-                ctx.lineWidth = "6";                  
-                ctx.rect(125,270,100,120);            
-                ctx.stroke();      
-            }
-            if(allowedKeys[e.keyCode] === 'g') {
-                selected = playerSprites.girl;   
-            }
-            if(allowedKeys[e.keyCode] === '(space)') {
-                if(selected!=undefined){
-                    player.sprite = selected;
-                    gameReady = true;
-                }
-            }
-        });        
-     }
-    else {    
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    }
 }
 
 var Gem = function(x,y,spriteArr,width,height) {

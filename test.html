@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	
+	<canvas id="myC" width="600px" height="400px"></canvas>
+  <script src="js/resources.js"></script>
+	<script>
+		var cnv = document.getElementById('myC');
+		var ctx = cnv.getContext('2d');
+    Resources.load([
+        'images/char-boy.png',
+        'images/char-princess-girl.png'
+    ]);
+    Resources.onReady(init);
+    function init() {
+    	ctx.drawImage(Resources.get('images/char-boy.png'),100,10);
+    	ctx.drawImage(Resources.get('images/char-boy.png'),10,150);
+    	ctx.drawImage(Resources.get('images/char-boy.png'),5,50);
+    }
+	</script>
+
+</body>
+</html>

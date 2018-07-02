@@ -46,6 +46,7 @@ var Engine = (function(global) {
          */
         update(dt);
         render();
+        
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -58,14 +59,66 @@ var Engine = (function(global) {
         win.requestAnimationFrame(main);
     }
 
+    
+    function characterSelect () {
+        ctx.fillStyle="white";
+        ctx.fillRect(50, 170, 400, 300);
+        ctx.drawImage(Resources.get(playerSprites.boy), 125, 225),
+        ctx.drawImage(Resources.get(playerSprites.girl), 275, 225)
+        ctx.font = "30px Arial";
+        ctx.fillStyle = "black";
+        ctx.textAlign = "center";
+        ctx.fillText("Welcome!",250,220);
+        ctx.font = "15px Arial";
+        ctx.fillText("Select you player.",250,240);
+        ctx.font = "10px Arial";
+        ctx.fillText("\'b' - Boy, \'g' - Girl, \'Space' - Select",250,260);
+
+            
+        document.addEventListener('keyup', function(e) {
+            var allowedKeys = {
+                66: 'b',
+                71: 'g',
+                32: '(space)'
+            };
+
+            if(allowedKeys[e.keyCode] === 'b') {              
+                selected = playerSprites.boy;
+                ctx.globalCompositeOperation="source-over";
+                ctx.strokeStyle="red";
+                ctx.lineWidth = "6";                  
+                ctx.rect(125,270,100,120);            
+                ctx.stroke();          
+            }
+            if(allowedKeys[e.keyCode] === 'g') {
+                selected = playerSprites.girl;
+                ctx.globalCompositeOperation="source-over";
+                ctx.strokeStyle="red";
+                ctx.lineWidth = "6";                  
+                ctx.rect(275,270,100,120);            
+                ctx.stroke();   
+            }
+            if(allowedKeys[e.keyCode] === '(space)') {
+                if(selected!=undefined){
+                    player.sprite = selected;
+                    gameReady = true;
+                    main();
+                }
+            }
+        });       
+    }
+
     /* This function does some initial setup that should only occur once,
      * particularly setting the lastTime variable that is required for the
      * game loop.
      */
+
     function init() {
         reset();
         lastTime = Date.now();
-        main();
+        if(gameReady!=true){
+            characterSelect();
+        }
     }
 
     /* This function is called by main (our game loop) and itself calls all
@@ -154,7 +207,6 @@ var Engine = (function(global) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
-
         renderEntities();
     }
 
@@ -172,8 +224,8 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
-       
         player.render();
+        
     }
 
     /* This function does nothing but it could have been a good place to
@@ -184,6 +236,7 @@ var Engine = (function(global) {
         // noop
     }
 
+
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
      * all of these images are properly loaded our game will start.
@@ -193,13 +246,14 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png',
-        'images/char-princess-girl.png',
+        playerSprites.boy,
+        playerSprites.girl,
         'images/Gem_Blue.png',
         'images/Gem_Green.png',
         'images/Gem_Orange.png',
     ]);
-    Resources.onReady(init);
+         
+        Resources.onReady(init); 
 
     /* Assign the canvas' context object to the global variable (the window
      * object when run in a browser) so that developers can use it more easily
