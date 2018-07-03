@@ -93,6 +93,7 @@ Player.prototype.checkCollisions = function() {
                 }
                 if(lives === 0) {
                     $(".l1").attr("src","images/Heart_empty.png");
+
                 lose();
                 }
         }
@@ -203,12 +204,6 @@ function win() {
 }
 
 function lose() {
-    ctx.globalCompositeOperation="source-over";
-    ctx.strokeStyle="red";
-    ctx.lineWidth = "6";                  
-    ctx.rect(125,270,100,120);            
-    ctx.stroke();  
-    console.log('ggg');
     pauseGame();    
 }
 

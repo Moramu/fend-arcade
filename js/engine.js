@@ -61,51 +61,66 @@ var Engine = (function(global) {
 
     
     function characterSelect () {
-        ctx.fillStyle="white";
-        ctx.fillRect(50, 170, 400, 300);
+        ctx.fillStyle="#b6b0b0";
+        ctx.fillRect(0, 50, 600, 600);
         ctx.drawImage(Resources.get(playerSprites.boy), 125, 225),
         ctx.drawImage(Resources.get(playerSprites.girl), 275, 225)
-        ctx.font = "30px Arial";
+        ctx.font = "40px Arial";
         ctx.fillStyle = "black";
         ctx.textAlign = "center";
-        ctx.fillText("Welcome!",250,220);
+        ctx.fillText("Welcome!",250,150);
+        ctx.font = "25px Arial";
+        ctx.fillText("Select your player.",250,200);
+        ctx.font = "17px Arial";
+        ctx.fillText("\'b' - Boy, \'g' - Girl, \'Space' - Select",250,250);
+        ctx.font = "20px Arial";
+        ctx.fillText("Control keys:",250,420);
         ctx.font = "15px Arial";
-        ctx.fillText("Select you player.",250,240);
-        ctx.font = "10px Arial";
-        ctx.fillText("\'b' - Boy, \'g' - Girl, \'Space' - Select",250,260);
+        ctx.fillText("Move left - Arrow Left",250,445);
+        ctx.font = "15px Arial";
+        ctx.fillText("Move right - Arrow Right",250,470);
+        ctx.font = "15px Arial";
+        ctx.fillText("Move up - Arrow Up",250,495);
+        ctx.font = "15px Arial";
+        ctx.fillText("Move down - Arrow Down",250,520);
+        document.addEventListener('keyup',skinPress, true);
+    }
 
-            
-        document.addEventListener('keyup', function(e) {
-            var allowedKeys = {
-                66: 'b',
-                71: 'g',
-                32: '(space)'
-            };
+    var skinPress = function(e) {
+    var allowedKeys = {
+        66: 'b',
+        71: 'g',
+        32: '(space)'
+    };
+    skinSelect(allowedKeys[e.keyCode]);
+    } 
 
-            if(allowedKeys[e.keyCode] === 'b') {              
-                selected = playerSprites.boy;
-                ctx.globalCompositeOperation="source-over";
-                ctx.strokeStyle="red";
-                ctx.lineWidth = "6";                  
-                ctx.rect(125,270,100,120);            
-                ctx.stroke();          
+    function skinSelect(key) {
+        if(key === 'b') {
+            selected = playerSprites.boy;
+
+            // ctx.drawImage(Resources.get(playerSprites.girl), 275, 225);
+            ctx.strokeStyle="red";
+            ctx.lineWidth = "3";                  
+            ctx.rect(125,270,100,120);            
+            ctx.stroke();          
             }
-            if(allowedKeys[e.keyCode] === 'g') {
-                selected = playerSprites.girl;
-                ctx.globalCompositeOperation="source-over";
-                ctx.strokeStyle="red";
-                ctx.lineWidth = "6";                  
-                ctx.rect(275,270,100,120);            
-                ctx.stroke();   
-            }
-            if(allowedKeys[e.keyCode] === '(space)') {
-                if(selected!=undefined){
-                    player.sprite = selected;
-                    gameReady = true;
-                    main();
+        if(key === 'g') {
+            selected = playerSprites.girl;
+            // ctx.clearRect(125,270,100,120); 
+            ctx.strokeStyle="red";
+            ctx.lineWidth = "3";                  
+            ctx.rect(275,270,100,120);            
+            ctx.stroke();   
+        }
+        if(key === '(space)') {
+            if(selected!=undefined){
+                player.sprite = selected;
+                gameReady = true;
+                main();
+                document.removeEventListener('keyup',skinPress,true);   
                 }
             }
-        });       
     }
 
     /* This function does some initial setup that should only occur once,
@@ -138,7 +153,9 @@ var Engine = (function(global) {
 
     document.addEventListener('keyup',press, true);
      $('.pause').on('click', function()  {
+        if(enemy.speed!=0){
          pauseGame();
+        }
      }); 
 
     $('.play').on('click', function()  {
