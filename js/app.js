@@ -150,9 +150,9 @@ var gemPos = [[25,125,225,325,425],[140,225,310]];
 var player = new Player(200,400);
 var enemyQuantity = 3;
 var gemQuantity = 2;
-document.addEventListener('keyup',press, true);
 gemGenerate();
 enemyGenerate();
+document.addEventListener('keyup',press,true);
 
 
 
@@ -200,11 +200,9 @@ function gemGenerate () {
 function win() { 
     player.x = 200;
     player.y = 400;
-    pauseGame(); 
 }
 
-function lose() {
-    pauseGame();    
+function lose() {   
 }
 
 // Pause game
@@ -212,7 +210,7 @@ function pauseGame() {
     allEnemies.forEach(function(enemy) {
         enemy.speed = 0;
     });
-    document.removeEventListener('keyup',press,true);    
+    document.removeEventListener('keyup',press,true);  
 }
 
 // Resume Game
@@ -223,8 +221,18 @@ function resumeGame() {
     document.addEventListener('keyup',press,true);
 }
 
-function restartGame(){
-
+function gameControlListeners() {
+    document.addEventListener('keyup',press, true);
+     $('.pause').on('click', function()  {
+        if(enemy.speed!=0){
+            pauseGame();
+        }
+     }); 
+    $('.play').on('click', function()  {
+        if(enemy.speed === 0) {
+            resumeGame();
+        }
+    }); 
 }
 
 

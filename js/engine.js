@@ -22,7 +22,10 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
-        lastTime;
+        lastTime,
+        selectBoy = false,
+        selectGirl = false;
+
 
     canvas.width = 505;
     canvas.height = 606;
@@ -97,31 +100,47 @@ var Engine = (function(global) {
 
     function skinSelect(key) {
         if(key === 'b') {
-            selected = playerSprites.boy;
-
-            // ctx.drawImage(Resources.get(playerSprites.girl), 275, 225);
-            ctx.strokeStyle="red";
-            ctx.lineWidth = "3";                  
-            ctx.rect(125,270,100,120);            
-            ctx.stroke();          
+            if (selectBoy === false) {
+                if(selectGirl === true) {
+                   ctx.clearRect(275,270,100,120);
+                   ctx.fillStyle="#b6b0b0";
+                   ctx.fillRect(270,265,110,130);
+                   ctx.drawImage(Resources.get(playerSprites.girl), 275, 225);
+                   selectGirl = false;
+                }    
+                ctx.strokeStyle="red";
+                ctx.lineWidth = "3";                  
+                ctx.strokeRect(125,270,100,120);           
+                selectBoy = true;
+            }
+            selected = playerSprites.boy;             
             }
         if(key === 'g') {
+            if (selectGirl === false) {
+                if(selectBoy === true){
+                   ctx.clearRect(125,270,100,120);
+                   ctx.fillStyle="#b6b0b0";
+                   ctx.fillRect(120,265,110,130);
+                   ctx.drawImage(Resources.get(playerSprites.boy), 125, 225);
+                   selectBoy = false;
+                }
+                ctx.strokeStyle="red";
+                ctx.lineWidth = "3";                  
+                ctx.strokeRect(275,270,100,120);            
+                selectGirl = true;         
+            }
             selected = playerSprites.girl;
-            // ctx.clearRect(125,270,100,120); 
-            ctx.strokeStyle="red";
-            ctx.lineWidth = "3";                  
-            ctx.rect(275,270,100,120);            
-            ctx.stroke();   
         }
         if(key === '(space)') {
             if(selected!=undefined){
                 player.sprite = selected;
                 gameReady = true;
                 main();
-                document.removeEventListener('keyup',skinPress,true);   
+                document.removeEventListener('keyup',skinPress,true);
                 }
             }
     }
+
 
     /* This function does some initial setup that should only occur once,
      * particularly setting the lastTime variable that is required for the
@@ -151,23 +170,7 @@ var Engine = (function(global) {
         player.checkCollisions();
     }
 
-    document.addEventListener('keyup',press, true);
-     $('.pause').on('click', function()  {
-        if(enemy.speed!=0){
-         pauseGame();
-        }
-     }); 
-
-    $('.play').on('click', function()  {
-        if(enemy.speed === 0) {
-            resumeGame();
-        }
-    }); 
-    $('.restartButton').on('click', function()  {
-            restartGame();
-            console.log('gg');
-        
-    }); 
+    
 
     /* This is called by the update function and loops through all of the
      * objects within your allEnemies array as defined in app.js and calls
@@ -177,6 +180,7 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
+        gameControlListeners();
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
