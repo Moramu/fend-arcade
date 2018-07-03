@@ -202,11 +202,13 @@ function win() {
     player.y = 400;
 }
 
-function lose() {   
+function lose(func) { 
+
 }
 
 // Pause game
 function pauseGame() {
+       
     allEnemies.forEach(function(enemy) {
         enemy.speed = 0;
     });

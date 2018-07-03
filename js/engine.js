@@ -150,9 +150,6 @@ var Engine = (function(global) {
     function init() {
         reset();
         lastTime = Date.now();
-        if(gameReady!=true){
-            characterSelect();
-        }
     }
 
     /* This function is called by main (our game loop) and itself calls all
@@ -170,7 +167,7 @@ var Engine = (function(global) {
         player.checkCollisions();
     }
 
-    
+    gameControlListeners();
 
     /* This is called by the update function and loops through all of the
      * objects within your allEnemies array as defined in app.js and calls
@@ -180,7 +177,6 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
-        gameControlListeners();
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
@@ -254,7 +250,7 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+        characterSelect();
     }
 
 
