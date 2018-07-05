@@ -62,7 +62,7 @@ var Engine = (function(global) {
         win.requestAnimationFrame(main);
     }
 
-    
+    // Character select draw
     function characterSelect () {
         ctx.fillStyle="#b6b0b0";
         ctx.fillRect(0, 50, 600, 600);
@@ -89,6 +89,21 @@ var Engine = (function(global) {
         document.addEventListener('keyup',skinPress, true);
     }
 
+    // Lose Draw
+    function drawLose() {
+        ctx.fillStyle="#b6b0b0";
+        ctx.fillRect(0, 50, 600, 600);
+        ctx.font = "40px Arial";
+        ctx.fillStyle = "black";
+        ctx.textAlign = "center";
+        ctx.fillText("You Lose!",250,200);
+        ctx.font = "30px Arial";
+        ctx.fillText("Your score:" + score,250,300);
+        ctx.font = "20px Arial";
+        ctx.fillText("\"r\" - Restart game",250,400);
+    }
+
+    // Player select handle
     var skinPress = function(e) {
     var allowedKeys = {
         66: 'b',
@@ -98,6 +113,7 @@ var Engine = (function(global) {
     skinSelect(allowedKeys[e.keyCode]);
     } 
 
+    // Skin select
     function skinSelect(key) {
         if(key === 'b') {
             if (selectBoy === false) {
@@ -146,10 +162,11 @@ var Engine = (function(global) {
      * particularly setting the lastTime variable that is required for the
      * game loop.
      */
-
+      
     function init() {
         reset();
         lastTime = Date.now();
+        // main();
     }
 
     /* This function is called by main (our game loop) and itself calls all
@@ -167,6 +184,7 @@ var Engine = (function(global) {
         player.checkCollisions();
     }
 
+    //Game Control Listeners
     gameControlListeners();
 
     /* This is called by the update function and loops through all of the
@@ -182,6 +200,8 @@ var Engine = (function(global) {
         });
         player.update();
     }
+
+   
 
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
@@ -224,13 +244,23 @@ var Engine = (function(global) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
+        // if Game Lose waiting for Player key pressed. Moving enemies on start position
+        if(gameLose){
+            document.addEventListener('keyup',restartPress,true);
+            drawLose();
+            allEnemies.forEach(function(enemy){
+                enemy.x = -100;
+            });      
+        } else {
         renderEntities();
+        }
     }
 
     /* This function is called by the render function and is called on each game
      * tick. Its purpose is to then call the render functions you have defined
      * on your enemy and player entities within app.js
      */
+
     function renderEntities() {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
@@ -242,7 +272,6 @@ var Engine = (function(global) {
             enemy.render();
         });
         player.render();
-        
     }
 
     /* This function does nothing but it could have been a good place to
@@ -270,7 +299,7 @@ var Engine = (function(global) {
         'images/Gem_Orange.png',
     ]);
          
-        Resources.onReady(init); 
+        Resources.onReady(init);
 
     /* Assign the canvas' context object to the global variable (the window
      * object when run in a browser) so that developers can use it more easily

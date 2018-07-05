@@ -14,9 +14,6 @@ var Enemy = function(x,y,speed) {
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
     this.x += this.speed * dt;
     allEnemies.forEach(function(enemy) {
         if(enemy.x > 500) {
@@ -30,9 +27,7 @@ Enemy.prototype.update = function(dt) {
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    if(gameReady != true) {
-    }
-    else {
+    if(gameReady === true) {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 };
@@ -40,13 +35,13 @@ Enemy.prototype.render = function() {
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-
 var Player = function(x,y) {
     this.x = x;
     this.y = y;
     this.sprite;
 }
 
+//Player hadle key pressed
 Player.prototype.handleInput = function(key){
     if(key === 'up') {
         player.y -=85;
@@ -62,6 +57,7 @@ Player.prototype.handleInput = function(key){
     }
 }
 
+//Player movement update
 Player.prototype.update = function() {
     if (this.x > 400) {
         this.x = 400;
@@ -74,10 +70,12 @@ Player.prototype.update = function() {
     }
     if (this.y < 0) {
         this.y = -25;
-        setTimeout(win,500);
+        document.removeEventListener('keyup',press,true);
+        setTimeout(water,200);
     }
 }
 
+//Player check collisions with bugs
 Player.prototype.checkCollisions = function() {
     if(gameReady===true) {
     allEnemies.forEach(function(enemy) {
@@ -85,27 +83,29 @@ Player.prototype.checkCollisions = function() {
             player.x = 200;
             player.y = 400;
             lives-=1;
-                if(lives === 2) {
-                    $(".l3").attr("src","images/Heart_empty.png");
-                }
-                if(lives === 1) {
-                    $(".l2").attr("src","images/Heart_empty.png");
-                }
-                if(lives === 0) {
-                    $(".l1").attr("src","images/Heart_empty.png");
-
+            if(lives === 2) {
+                $(".l3").attr("src","images/Heart_empty.png");
+            }
+            if(lives === 1) {
+                $(".l2").attr("src","images/Heart_empty.png");
+            }
+            if(lives === 0) {
+                $(".l1").attr("src","images/Heart_empty.png");
                 lose();
-                }
+            }
         }
   });
   }
 };
 
-  
+// Render player on canvas
 Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    if(gameReady===true){
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    }   
 }
 
+//Gem constructor
 var Gem = function(x,y,spriteArr,width,height) {
     this.x = x;
     this.y = y;
@@ -114,6 +114,7 @@ var Gem = function(x,y,spriteArr,width,height) {
     this.height = height;
 }
 
+//Check collision Gem vs Player
 Gem.prototype.checkCollisions = function() {
    if(gameReady===true){
     allGems.forEach(function(gem) {
@@ -128,21 +129,26 @@ Gem.prototype.checkCollisions = function() {
   }   
 };
 
+//Gem render on canvas
 Gem.prototype.render = function() {
+    if(gameReady === true) {
      ctx.drawImage(Resources.get(this.sprite), this.x, this.y, this.width,this.height);
-}
+    }
+};
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 
 
-var gameReady = false;
+var gameReady = false; 
+var gameLose = false;
 var lives = 3;
 var score = 0;
 var selected;
 var allEnemies = [];
 var allGems = [];
+var enemySpeed = [];
 var playerSprites = {boy:'images/char-boy.png', girl:'images/char-princess-girl.png'};
 var gemSprites = ['images/Gem_Blue.png','images/Gem_Green.png','images/Gem_Orange.png'];
 var enemyPos = [60,145,230];
@@ -160,14 +166,21 @@ document.addEventListener('keyup',press,true);
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 var press = function(e) {
-     var allowedKeys = {
+    var allowedKeys = {
         37: 'left',
         38: 'up',
         39: 'right',
-        40: 'down'
+        40: 'down',
     };
-
     player.handleInput(allowedKeys[e.keyCode]);
+}
+
+// Restart 
+var restartPress = function(e) {
+    var allowedKeys = {
+        82: 'r',
+    };
+    restartGame(allowedKeys[e.keyCode]);     
 }
 
 // Randomize position 
@@ -196,33 +209,51 @@ function gemGenerate () {
     gemQuantity;
 }
 
-// Win game
-function win() { 
+function water() {
     player.x = 200;
     player.y = 400;
+    document.addEventListener('keyup',press,true);
 }
 
-function lose(func) { 
-
+function lose() {
+    gameReady = false;
+    gameLose = true;
+    lives = 3;
 }
 
 // Pause game
 function pauseGame() {
-       
+    document.removeEventListener('keyup',press,true);
     allEnemies.forEach(function(enemy) {
+        enemySpeed.push(enemy.speed);
         enemy.speed = 0;
     });
-    document.removeEventListener('keyup',press,true);  
 }
 
 // Resume Game
 function resumeGame() {
-    allEnemies.forEach(function(enemy) {
-        enemy.speed = 100;
+    allEnemies.forEach(function(enemy,index) {
+        enemy.speed = enemySpeed[index];
     });
+    enemySpeed = [];
     document.addEventListener('keyup',press,true);
 }
 
+// Game handle restart
+function restartGame(key) {
+    if(key === 'r'){
+       score = 0;
+       document.querySelector('.player-score').textContent = score;
+       $(".l3").attr("src","images/Heart.png");
+       $(".l2").attr("src","images/Heart.png");
+       $(".l1").attr("src","images/Heart.png");
+       document.removeEventListener('keyup',restartPress,true);
+       gameLose = false;
+       gameReady = true;
+    }
+}
+
+// Game control listeners
 function gameControlListeners() {
     document.addEventListener('keyup',press, true);
      $('.pause').on('click', function()  {
@@ -236,5 +267,7 @@ function gameControlListeners() {
         }
     }); 
 }
+
+
 
 
