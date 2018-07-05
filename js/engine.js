@@ -248,7 +248,7 @@ var Engine = (function(global) {
         if(gameLose){
             document.addEventListener('keyup',restartPress,true);
             drawLose();
-            allEnemies.forEach(function(enemy){
+            allEnemies.forEach((enemy) => {
                 enemy.x = -100;
             });      
         } else {

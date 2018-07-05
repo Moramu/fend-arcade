@@ -1,13 +1,21 @@
+"use strict";
+
+// Rendering objects with parameters 
+var renderObject = function(sprite,x,y,height,width) {
+    if(gameReady === true) {
+        if(height && width !=null) {
+            ctx.drawImage(Resources.get(sprite),x,y,height,width);
+        } else {
+            ctx.drawImage(Resources.get(sprite),x,y);
+       }
+    }
+}
+
 // Enemies our player must avoid
 var Enemy = function(x,y,speed) {
     this.x = x;
     this.y = y;
     this.speed = speed;
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
-
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
 };
 
@@ -15,7 +23,7 @@ var Enemy = function(x,y,speed) {
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
     this.x += this.speed * dt;
-    allEnemies.forEach(function(enemy) {
+    allEnemies.forEach((enemy) => {
         if(enemy.x > 500) {
             enemy.x = -100;
             enemy.speed = 1 + Math.floor(Math.random() * 512);
@@ -27,9 +35,7 @@ Enemy.prototype.update = function(dt) {
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    if(gameReady === true) {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    }
+    renderObject(this.sprite,this.x,this.y);
 };
 
 // Now write your own player class
@@ -78,8 +84,8 @@ Player.prototype.update = function() {
 //Player check collisions with bugs
 Player.prototype.checkCollisions = function() {
     if(gameReady===true) {
-    allEnemies.forEach(function(enemy) {
-        if(player.y === enemy.y && Math.abs(player.x-enemy.x)<70 ) {
+    allEnemies.forEach((enemy) => {
+        if(this.y === enemy.y && Math.abs(this.x-enemy.x)<70 ) {
             player.x = 200;
             player.y = 400;
             lives-=1;
@@ -100,9 +106,7 @@ Player.prototype.checkCollisions = function() {
 
 // Render player on canvas
 Player.prototype.render = function() {
-    if(gameReady===true){
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    }   
+    renderObject(this.sprite,this.x,this.y);
 }
 
 //Gem constructor
@@ -117,7 +121,7 @@ var Gem = function(x,y,spriteArr,width,height) {
 //Check collision Gem vs Player
 Gem.prototype.checkCollisions = function() {
    if(gameReady===true){
-    allGems.forEach(function(gem) {
+    allGems.forEach((gem) => {
         if((Math.abs(gem.y - player.y) === 80 || Math.abs(gem.y - player.y) === 85) && Math.abs(gem.x - player.x) === 25) { 
             score+=100;
             document.querySelector('.player-score').textContent = score;
@@ -131,9 +135,10 @@ Gem.prototype.checkCollisions = function() {
 
 //Gem render on canvas
 Gem.prototype.render = function() {
-    if(gameReady === true) {
-     ctx.drawImage(Resources.get(this.sprite), this.x, this.y, this.width,this.height);
-    }
+    // if(gameReady === true) {
+    //  ctx.drawImage(Resources.get(this.sprite), this.x, this.y, this.width,this.height);
+    // }
+    renderObject(this.sprite,this.x,this.y,this.height,this.width);
 };
 
 // Now instantiate your objects.
@@ -146,6 +151,9 @@ var gameLose = false;
 var lives = 3;
 var score = 0;
 var selected;
+var gem;
+var enemy;
+var player;
 var allEnemies = [];
 var allGems = [];
 var enemySpeed = [];
@@ -224,7 +232,7 @@ function lose() {
 // Pause game
 function pauseGame() {
     document.removeEventListener('keyup',press,true);
-    allEnemies.forEach(function(enemy) {
+    allEnemies.forEach((enemy) => {
         enemySpeed.push(enemy.speed);
         enemy.speed = 0;
     });
@@ -232,7 +240,7 @@ function pauseGame() {
 
 // Resume Game
 function resumeGame() {
-    allEnemies.forEach(function(enemy,index) {
+    allEnemies.forEach((enemy,index) => {
         enemy.speed = enemySpeed[index];
     });
     enemySpeed = [];
