@@ -1,7 +1,7 @@
 "use strict";
 
 // Rendering objects with parameters 
-var renderObject = function(sprite,x,y,height,width) {
+const renderObject = function(sprite,x,y,height,width) {
     if(gameReady === true) {
         if(height && width !=null) {
             ctx.drawImage(Resources.get(sprite),x,y,height,width);
@@ -12,140 +12,141 @@ var renderObject = function(sprite,x,y,height,width) {
 }
 
 // Enemies our player must avoid
-var Enemy = function(x,y,speed) {
+class Enemy {
+    constructor(x,y,speed) {
     this.x = x;
     this.y = y;
     this.speed = speed;
     this.sprite = 'images/enemy-bug.png';
-};
+    };
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
-Enemy.prototype.update = function(dt) {
-    this.x += this.speed * dt;
-    allEnemies.forEach((enemy) => {
-        if(enemy.x > 500) {
-            enemy.x = -100;
-            enemy.speed = 1 + Math.floor(Math.random() * 512);
-            enemy.y = randPosition(enemyPos);
-        }
-    });
-};
+    update(dt) {
+        this.x += this.speed * dt;
+        allEnemies.forEach((enemy) => {
+            if(enemy.x > 500) {
+                enemy.x = -100;
+                enemy.speed = 1 + Math.floor(Math.random() * 512);
+                enemy.y = randPosition(enemyPos);
+            }
+        });
+    };
 
-
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
-    renderObject(this.sprite,this.x,this.y);
-};
+    // Draw the enemy on the screen, required method for game
+    render() {
+        renderObject(this.sprite,this.x,this.y);
+    };
+}
 
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-var Player = function(x,y) {
-    this.x = x;
-    this.y = y;
-    this.sprite;
-}
+class Player {
+    constructor(x,y) {
+        this.x = x;
+        this.y = y;
+        this.sprite;
+    }
 
-//Player hadle key pressed
-Player.prototype.handleInput = function(key){
-    if(key === 'up') {
-        player.y -=85;
-    }
-    if(key === 'down') {
-        player.y +=85;
-    }
-    if(key === 'left') {
-        player.x -=100;
-    }
-    if(key === 'right') {
-        player.x +=100;
-    }
-}
-
-//Player movement update
-Player.prototype.update = function() {
-    if (this.x > 400) {
-        this.x = 400;
-    }
-    if (this.x < 0) {
-       this.x = 0;
-    }
-    if (this.y > 400) {
-        this.y = 400;
-    }
-    if (this.y < 0) {
-        this.y = -25;
-        document.removeEventListener('keyup',press,true);
-        setTimeout(water,200);
-    }
-}
-
-//Player check collisions with bugs
-Player.prototype.checkCollisions = function() {
-    if(gameReady===true) {
-    allEnemies.forEach((enemy) => {
-        if(this.y === enemy.y && Math.abs(this.x-enemy.x)<70 ) {
-            player.x = 200;
-            player.y = 400;
-            lives-=1;
-            if(lives === 2) {
-                $(".l3").attr("src","images/Heart_empty.png");
-            }
-            if(lives === 1) {
-                $(".l2").attr("src","images/Heart_empty.png");
-            }
-            if(lives === 0) {
-                $(".l1").attr("src","images/Heart_empty.png");
-                lose();
-            }
+    //Player hadle key pressed
+    handleInput (key){
+        if(key === 'up') {
+            player.y -=85;
         }
-  });
-  }
-};
+        if(key === 'down') {
+            player.y +=85;
+        }
+        if(key === 'left') {
+            player.x -=100;
+        }
+        if(key === 'right') {
+        player.x +=100;
+        }
+    }
+    
+    //Player movement update
+    update () {
+        if (this.x > 400) {
+            this.x = 400;
+        }   
+        if (this.x < 0) {
+            this.x = 0;
+        }
+        if (this.y > 400) {
+            this.y = 400;
+        }
+        if (this.y < 0) {
+            this.y = -25;
+            document.removeEventListener('keyup',press,true);
+            setTimeout(water,200);
+        }
+    }
 
-// Render player on canvas
-Player.prototype.render = function() {
-    renderObject(this.sprite,this.x,this.y);
+    //Player check collisions with bugs
+    enemyCheckCollisions() {
+        if(gameReady===true) {
+            allEnemies.forEach((enemy) => {
+                if(this.y === enemy.y && Math.abs(this.x-enemy.x)<70 ) {
+                    this.x = 200;
+                    this.y = 400;
+                    lives-=1;
+                    switch (lives) {
+                        case 0:
+                            $('.l1').attr("src","images/Heart_empty.png");
+                            lose();
+                            break;
+                        case 1:   
+                            $('.l2').attr("src","images/Heart_empty.png");
+                            break;  
+                        case 2:   
+                            $('.l3').attr("src","images/Heart_empty.png");
+                            break;  
+                    }
+                }
+            });
+        }
+    }
+
+    //Check collision Gem vs Player
+    gemCheckCollisions() {
+        if(gameReady===true){
+            allGems.forEach((gem) => {
+                if((Math.abs(gem.y - this.y) === 80 || Math.abs(gem.y - this.y) === 85) && Math.abs(gem.x - this.x) === 25) { 
+                    score+=100;
+                    document.querySelector('.player-score').textContent = score;
+                    delete allGems[allGems.indexOf(gem)];      
+                    gem = new Gem(randPosition(gemPos[0]),randPosition(gemPos[1]),gemSprites,50,50);
+                    allGems.push(gem);
+                }
+            });
+        }   
+    }
+
+    // Render player on canvas
+    render() {
+        renderObject(this.sprite,this.x,this.y);
+    }
 }
 
 //Gem constructor
-var Gem = function(x,y,spriteArr,width,height) {
+class Gem {
+    constructor(x,y,spriteArr,width,height) {
     this.x = x;
     this.y = y;
     this.sprite = spriteArr[Math.floor(Math.random() * spriteArr.length)];
     this.width = width;
     this.height = height;
+    }
+
+    //Gem render on canvas
+    render() {
+        renderObject(this.sprite,this.x,this.y,this.height,this.width);
+    }
 }
 
-//Check collision Gem vs Player
-Gem.prototype.checkCollisions = function() {
-   if(gameReady===true){
-    allGems.forEach((gem) => {
-        if((Math.abs(gem.y - player.y) === 80 || Math.abs(gem.y - player.y) === 85) && Math.abs(gem.x - player.x) === 25) { 
-            score+=100;
-            document.querySelector('.player-score').textContent = score;
-            delete allGems[allGems.indexOf(gem)];      
-            gem = new Gem(randPosition(gemPos[0]),randPosition(gemPos[1]),gemSprites,50,50);
-            allGems.push(gem);
-        }
-    });
-  }   
-};
 
-//Gem render on canvas
-Gem.prototype.render = function() {
-    // if(gameReady === true) {
-    //  ctx.drawImage(Resources.get(this.sprite), this.x, this.y, this.width,this.height);
-    // }
-    renderObject(this.sprite,this.x,this.y,this.height,this.width);
-};
-
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
-
-
+//Initiating objects
 var gameReady = false; 
 var gameLose = false;
 var lives = 3;
@@ -213,7 +214,7 @@ function gemGenerate () {
         gem = new Gem(randPosition(gemPos[0]),randPosition(gemPos[1]),gemSprites,50,50);
         allGems.push(gem);
         gemQuantity--;
-        }
+    }
     gemQuantity;
 }
 
@@ -275,7 +276,3 @@ function gameControlListeners() {
         }
     }); 
 }
-
-
-
-

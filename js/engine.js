@@ -180,8 +180,9 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        gem.checkCollisions();
-        player.checkCollisions();
+        //gem.checkCollisions();
+        player.gemCheckCollisions();
+        player.enemyCheckCollisions();
     }
 
     //Game Control Listeners
